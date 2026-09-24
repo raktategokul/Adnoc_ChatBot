@@ -45,6 +45,11 @@ export async function getUserConversations(req, res) {
       .request()
       .input('userId', sql.Int, userId)
       .query(`
+        -- Clean up any empty conversations with no messages
+        DELETE FROM Conversations
+        WHERE user_id = @userId
+          AND id NOT IN (SELECT DISTINCT conversation_id FROM Messages);
+
         SELECT id, title, created_at, updated_at
         FROM Conversations
         WHERE user_id = @userId

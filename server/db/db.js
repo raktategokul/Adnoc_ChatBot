@@ -2,7 +2,8 @@ import sql from 'mssql/msnodesqlv8.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const dbServer = process.env.DB_SERVER || 'localhost\\SQLEXPRESS';
+const rawDbServer = process.env.DB_SERVER || 'localhost\\SQLEXPRESS';
+const dbServer = rawDbServer.replace(/\\\\+/g, '\\');
 const dbDatabase = process.env.DB_DATABASE || 'NexusAIDB';
 const dbUser = process.env.DB_USER || '';
 const dbPassword = process.env.DB_PASSWORD || '';

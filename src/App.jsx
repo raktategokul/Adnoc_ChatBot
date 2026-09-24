@@ -2,8 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Header from './components/Header';
-import ChatContainer from './components/ChatContainer';
+import MainWebsite from './components/MainWebsite';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
@@ -16,13 +15,12 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Protected Main Application / Chatbot Dashboard */}
+          {/* Protected Main Application / OASIS Dashboard with Floating AI Copilot */}
           <Route
             path="/"
             element={
               <ProtectedRoute>
-                <Header />
-                <ChatContainer />
+                <MainWebsite />
               </ProtectedRoute>
             }
           />

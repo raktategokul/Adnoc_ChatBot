@@ -1369,3 +1369,1252 @@ html, body {
     padding: 28px 20px;
   }
 }
+
+/* ==================================================
+   OASIS AI COPILOT & ADNOC DASHBOARD WIDGET STYLES
+   ================================================== */
+
+@keyframes oasisPulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes oasisSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes oasisFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 1. Main Website Layout with Plain Background */
+.oasis-website-layout {
+  height: 100vh;
+  width: 100vw;
+  background-color: #080d16;
+  color: #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Top Navigation Bar */
+.oasis-topbar {
+  height: 52px;
+  min-height: 52px;
+  background: #0b111c;
+  border-bottom: 1px solid #162030;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 50;
+}
+
+.oasis-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adnoc-brand-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.oasis-header-branding {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.adnoc-oasis-title {
+  font-weight: 700;
+  font-size: 14.5px;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
+.adnoc-oasis-divider {
+  color: #334155;
+  font-size: 13px;
+}
+
+.adnoc-oasis-tagline {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.oasis-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.oasis-filter-pill {
+  background: #111a28;
+  border: 1px solid #1e2c3e;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.oasis-filter-pill:hover {
+  background: #182538;
+  border-color: #2b3d55;
+  color: #ffffff;
+}
+
+.oasis-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #111a28;
+  border: 1px solid #1e2c3e;
+  border-radius: 20px;
+  padding: 3px 10px 3px 5px;
+}
+
+.oasis-user-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.oasis-user-name {
+  font-size: 12px;
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+.oasis-logout-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  transition: color 0.15s;
+}
+
+.oasis-logout-btn:hover {
+  color: #ef4444;
+}
+
+/* Main Viewport & Left Rail */
+.oasis-main-viewport {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.oasis-left-rail {
+  width: 52px;
+  background: #090e18;
+  border-right: 1px solid #162030;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.oasis-rail-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.oasis-rail-btn:hover,
+.oasis-rail-btn.active {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.oasis-rail-bottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.oasis-user-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #172554;
+  color: #60a5fa;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #1e3a8a;
+}
+
+/* Dashboard Plain Canvas */
+.oasis-dashboard-canvas {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 28px;
+  overflow-y: auto;
+  background: radial-gradient(circle at 65% 25%, #0e1726 0%, #080d16 100%);
+}
+
+.oasis-dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.oasis-dashboard-title {
+  font-size: 21px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.oasis-dashboard-unit-badge {
+  background: #111a28;
+  border: 1px solid #1e2c3e;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+
+.oasis-plain-backdrop {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.oasis-grid-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.oasis-preview-card {
+  background: #0f1826;
+  border: 1px solid #19273c;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.oasis-card-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.oasis-card-sub {
+  font-size: 11.5px;
+  color: #10b981;
+}
+
+.oasis-card-metrics-row {
+  display: flex;
+  gap: 14px;
+  margin-top: 4px;
+}
+
+.oasis-metric-box {
+  flex: 1;
+  background: #0a101b;
+  border: 1px solid #162234;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.oasis-metric-val {
+  font-size: 20px;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.oasis-metric-desc {
+  font-size: 10.5px;
+  color: #64748b;
+}
+
+.oasis-backdrop-notice {
+  margin-top: auto;
+  padding: 14px;
+  text-align: center;
+  font-size: 12px;
+  color: #475569;
+}
+
+/* ==================================================
+   FLOATING LAUNCHER BUTTON (Bottom Right)
+   ================================================== */
+.oasis-launcher-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 24px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #0c1422;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 24px rgba(168, 85, 247, 0.55);
+  cursor: pointer;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+  padding: 0;
+}
+
+.oasis-launcher-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7), 0 0 32px rgba(168, 85, 247, 0.75);
+}
+
+.oasis-launcher-btn.active-open {
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.6), 0 0 24px rgba(168, 85, 247, 0.65);
+}
+
+.oasis-launcher-pulse {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 2px solid rgba(168, 85, 247, 0.6);
+  animation: oasisPulse 2.4s infinite cubic-bezier(0.4, 0, 0.6, 1);
+  pointer-events: none;
+}
+
+.oasis-spinning {
+  animation: spin 0.6s linear infinite;
+}
+
+/* ==================================================
+   OASIS AI COPILOT CHAT WIDGET POPUP WINDOW
+   ================================================== */
+.oasis-widget-popup {
+  position: fixed;
+  bottom: 88px;
+  right: 24px;
+  width: 415px;
+  height: 585px;
+  max-width: calc(100vw - 28px);
+  max-height: calc(100vh - 105px);
+  background: #0d1522;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+  animation: oasisSlideUp 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(16px);
+}
+
+/* Widget Header */
+.oasis-widget-header {
+  padding: 10px 14px;
+  background: #0d1522;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.oasis-header-left {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  flex: 1;
+}
+
+.oasis-header-titles {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.oasis-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  line-height: 1.25;
+}
+
+.oasis-subtitle {
+  font-size: 11px;
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+  margin-top: 2px;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.oasis-status-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.oasis-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.oasis-icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: transparent;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.oasis-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.oasis-close-btn:hover {
+  color: #ef4444;
+}
+
+/* History button in top right */
+.oasis-history-toggle-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.oasis-history-label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.oasis-history-toggle-btn.active,
+.oasis-history-toggle-btn:hover {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+}
+
+/* Widget Body */
+.oasis-widget-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: #0b111b;
+}
+
+/* History Slide-over View */
+.oasis-history-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 12px;
+  background: #0b111b;
+  animation: oasisFadeIn 0.2s ease;
+}
+
+.oasis-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #162030;
+}
+
+.oasis-history-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.oasis-new-chat-pill {
+  background: #2563eb;
+  border: none;
+  border-radius: 14px;
+  padding: 4px 10px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.oasis-new-chat-pill:hover {
+  background: #1d4ed8;
+}
+
+.oasis-history-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 2px;
+}
+
+.oasis-history-empty {
+  text-align: center;
+  padding: 30px 10px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.oasis-history-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #0f1725;
+  border: 1px solid #192638;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.oasis-history-item:hover,
+.oasis-history-item.active {
+  background: #162234;
+  border-color: #263852;
+}
+
+.oasis-history-item.active {
+  border-color: #38bdf8;
+}
+
+.oasis-history-item-icon {
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.oasis-history-item-details {
+  flex: 1;
+  overflow: hidden;
+}
+
+.oasis-history-item-title {
+  font-size: 12px;
+  color: #f1f5f9;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oasis-history-item-time {
+  font-size: 10px;
+  color: #64748b;
+  margin-top: 1px;
+}
+
+.oasis-history-delete-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.oasis-history-delete-btn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.oasis-history-footer {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #162030;
+}
+
+.oasis-back-to-chat-btn {
+  width: 100%;
+  background: #111a28;
+  border: 1px solid #1e2c3e;
+  border-radius: 8px;
+  padding: 6px;
+  color: #94a3b8;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.oasis-back-to-chat-btn:hover {
+  background: #182538;
+  color: #ffffff;
+}
+
+/* Chat Messages Scroll Area */
+.oasis-messages-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 12px 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scroll-behavior: smooth;
+}
+
+/* Message Rows */
+.oasis-msg-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  animation: oasisFadeIn 0.2s ease;
+}
+
+.oasis-msg-row.user {
+  justify-content: flex-end;
+}
+
+.oasis-msg-row.assistant {
+  justify-content: flex-start;
+}
+
+.oasis-msg-avatar {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.oasis-msg-content-col {
+  display: flex;
+  flex-direction: column;
+  max-width: 84%;
+}
+
+.oasis-msg-bubble {
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.oasis-msg-bubble.assistant {
+  background: #131c2e;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.oasis-msg-bubble.user {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  border-radius: 12px 12px 3px 12px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.oasis-msg-text {
+  white-space: pre-wrap;
+}
+
+/* Clickable KPI Links inside welcome card */
+.oasis-kpi-link {
+  color: #60a5fa;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  display: inline;
+  transition: color 0.15s;
+}
+
+.oasis-kpi-link:hover {
+  color: #93c5fd;
+}
+
+.oasis-msg-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 3px;
+  padding: 0 2px;
+}
+
+.oasis-msg-timestamp {
+  font-size: 10px;
+  color: #64748b;
+}
+
+.oasis-msg-action-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 3px;
+  transition: color 0.15s;
+}
+
+.oasis-msg-action-btn:hover {
+  color: #cbd5e1;
+}
+
+/* Suggested Action Chips from Copilot */
+.oasis-suggested-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.oasis-action-chip {
+  background: rgba(37, 99, 235, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: #93c5fd;
+  border-radius: 14px;
+  padding: 3px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.oasis-action-chip:hover {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+/* Typing Indicator */
+.oasis-typing-bubble {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+}
+
+.oasis-typing-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #64748b;
+  animation: oasisTyping 1.4s infinite ease-in-out;
+}
+
+.oasis-typing-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.oasis-typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.oasis-typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes oasisTyping {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1.1);
+    opacity: 1;
+    background: #38bdf8;
+  }
+}
+
+/* Quick Action Chips Row (above input) */
+.oasis-quick-chips-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 6px 12px 6px 12px;
+  scrollbar-width: none;
+  background: #0d1522;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.oasis-quick-chips-row::-webkit-scrollbar {
+  display: none;
+}
+
+.oasis-quick-pill {
+  white-space: nowrap;
+  background: #111a28;
+  border: 1px solid #1e2c3d;
+  border-radius: 16px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.oasis-quick-pill:hover {
+  border-color: #3b82f6;
+  color: #ffffff;
+  background: rgba(59, 130, 246, 0.15);
+}
+
+/* Input Capsule & Footer */
+.oasis-widget-footer {
+  padding: 6px 12px 10px 12px;
+  background: #0d1522;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  flex-shrink: 0;
+}
+
+.oasis-input-capsule-form {
+  width: 100%;
+}
+
+.oasis-input-capsule {
+  background: #09101b;
+  border: 1px solid #1a2a3e;
+  border-radius: 22px;
+  padding: 6px 10px 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.oasis-input-capsule:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.oasis-chat-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #f8fafc;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.oasis-chat-input::placeholder {
+  color: #556982;
+}
+
+.oasis-send-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.oasis-send-btn.active {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+}
+
+.oasis-capsule-subfooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+  padding: 0 4px;
+  font-size: 10px;
+  color: #556982;
+}
+
+.oasis-subfooter-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ==================================================
+   OASIS COPILOT STUDIO CONFIGURATION MODAL
+   ================================================== */
+.oasis-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+  animation: oasisFadeIn 0.2s ease;
+}
+
+.oasis-modal-card {
+  width: 500px;
+  max-width: 100%;
+  background: #0d1522;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: oasisSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.oasis-modal-header {
+  padding: 16px 20px;
+  background: #0d1522;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.oasis-modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.oasis-modal-icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(37, 99, 235, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.oasis-modal-title {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.oasis-modal-subtitle {
+  font-size: 11.5px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.oasis-modal-close-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: transparent;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.oasis-modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.oasis-modal-form {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.oasis-modal-notice {
+  background: #111a28;
+  border: 1px solid #1c2b3d;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: #cbd5e1;
+  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.oasis-notice-icon {
+  color: #38bdf8;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.oasis-modal-notice strong {
+  color: #ffffff;
+}
+
+.oasis-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.oasis-field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.oasis-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.oasis-recommended-tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 12px;
+  padding: 1px 8px;
+}
+
+.oasis-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.oasis-modal-text-input {
+  width: 100%;
+  background: #09101b;
+  border: 1px solid #1c2b3d;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #f8fafc;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.oasis-modal-text-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.oasis-modal-text-input::placeholder {
+  color: #475569;
+}
+
+.oasis-input-wrapper.with-icon .oasis-modal-text-input {
+  padding-right: 38px;
+}
+
+.oasis-input-icon-btn {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #64748b;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+
+.oasis-input-icon-btn:hover {
+  color: #94a3b8;
+}
+
+.oasis-field-help {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.oasis-field-help em {
+  font-style: normal;
+  color: #94a3b8;
+}
+
+.oasis-form-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 2px 0;
+}
+
+.oasis-divider-line {
+  flex: 1;
+  height: 1px;
+  background: #19273c;
+}
+
+.oasis-divider-text {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.5px;
+}
+
+.oasis-modal-success-banner {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #34d399;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: oasisFadeIn 0.2s ease;
+}
+
+.oasis-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.oasis-btn-secondary {
+  background: #111a28;
+  border: 1px solid #1e2c3e;
+  border-radius: 9px;
+  padding: 9px 18px;
+  color: #94a3b8;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.oasis-btn-secondary:hover {
+  background: #182538;
+  color: #ffffff;
+  border-color: #2e435e;
+}
+
+.oasis-btn-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  border: none;
+  border-radius: 9px;
+  padding: 9px 20px;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+  transition: all 0.15s;
+}
+
+.oasis-btn-primary:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
+  transform: translateY(-1px);
+}
+
+

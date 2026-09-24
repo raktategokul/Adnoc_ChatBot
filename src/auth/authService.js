@@ -6,6 +6,25 @@
 
 const TOKEN_KEY = 'nexusai_auth_token';
 
+async function parseResponse(res, fallbackMessage) {
+  let data = {};
+  try {
+    const text = await res.text();
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    data = {};
+  }
+
+  if (!res.ok) {
+    if (res.status === 504 || res.status === 502) {
+      throw new Error('Backend server is unreachable. Please verify that the backend is running on port 5000.');
+    }
+    throw new Error(data.message || `${fallbackMessage} (${res.status})`);
+  }
+
+  return data;
+}
+
 export const authService = {
   getToken() {
     return localStorage.getItem(TOKEN_KEY);
@@ -32,11 +51,7 @@ export const authService = {
       body: JSON.stringify({ name, email, password }),
     });
 
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.message || 'Registration failed.');
-    }
-    return data;
+    return await parseResponse(res, 'Registration failed.');
   },
 
   async login({ email, password }) {
@@ -48,10 +63,7 @@ export const authService = {
       body: JSON.stringify({ email, password }),
     });
 
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.message || 'Login failed.');
-    }
+    const data = await parseResponse(res, 'Login failed.');
 
     if (data.token) {
       this.setToken(data.token);
@@ -79,18 +91,23 @@ export const authService = {
     const token = this.getToken();
     if (!token) return null;
 
-    const res = await fetch('/api/auth/me', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      const res = await fetch('/api/auth/me', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (!res.ok) {
-      this.removeToken();
+      if (!res.ok) {
+        this.removeToken();
+        return null;
+      }
+
+      const data = await parseResponse(res, 'Failed to fetch user.');
+      return data.user;
+    } catch (err) {
+      console.warn('Failed to get current user:', err);
       return null;
     }
-
-    const data = await res.json();
-    return data.user;
   },
 };

@@ -132,6 +132,15 @@ class CopilotService {
     this.watermark = null;
   }
 
+  /**
+   * Reset the current Direct Line session to start fresh
+   */
+  resetConversation() {
+    this.conversationId = null;
+    this.token = null;
+    this.watermark = null;
+  }
+
   isConfigured() {
     const ep = COPILOT_CONFIG.tokenEndpoint;
     const sec = COPILOT_CONFIG.directLineSecret;
