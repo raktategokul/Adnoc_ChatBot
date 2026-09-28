@@ -1,8 +1,36 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { getDbPool, sql } from '../db/db.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'nexusai_fallback_secret_key';
+
+// In-memory user store (zero database / zero SQL Server dependency)
+// Persists for the lifetime of the server process
+const users = new Map();
+
+// Helper to seed default test/demo accounts
+async function seedDefaultUsers() {
+  const salt = await bcrypt.genSalt(10);
+  const defaultPasswordHash = await bcrypt.hash('password123', salt);
+
+  users.set('user@company.com', {
+    id: 1,
+    name: 'Gokul',
+    email: 'user@company.com',
+    password_hash: defaultPasswordHash,
+    created_at: new Date(),
+  });
+
+  users.set('gokul@company.com', {
+    id: 2,
+    name: 'Gokul',
+    email: 'gokul@company.com',
+    password_hash: defaultPasswordHash,
+    created_at: new Date(),
+  });
+}
+seedDefaultUsers();
+
+let nextUserId = 3;
 
 /**
  * Register a new user
@@ -35,15 +63,10 @@ export async function register(req, res) {
       });
     }
 
-    const pool = await getDbPool();
+    const normalizedEmail = email.trim().toLowerCase();
 
-    // Check if email already registered
-    const existingUserResult = await pool
-      .request()
-      .input('email', sql.NVarChar, email.trim().toLowerCase())
-      .query('SELECT id FROM Users WHERE LOWER(email) = LOWER(@email)');
-
-    if (existingUserResult.recordset.length > 0) {
+    // Check if email already registered in memory
+    if (users.has(normalizedEmail)) {
       return res.status(400).json({
         success: false,
         message: 'An account with this email already exists.',
@@ -54,19 +77,15 @@ export async function register(req, res) {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // Insert user into SQL Server
-    const insertResult = await pool
-      .request()
-      .input('name', sql.NVarChar, name.trim())
-      .input('email', sql.NVarChar, email.trim().toLowerCase())
-      .input('password_hash', sql.NVarChar, passwordHash)
-      .query(`
-        INSERT INTO Users (name, email, password_hash)
-        OUTPUT INSERTED.id, INSERTED.name, INSERTED.email
-        VALUES (@name, @email, @password_hash)
-      `);
+    const newUser = {
+      id: nextUserId++,
+      name: name.trim(),
+      email: normalizedEmail,
+      password_hash: passwordHash,
+      created_at: new Date(),
+    };
 
-    const newUser = insertResult.recordset[0];
+    users.set(normalizedEmail, newUser);
 
     return res.status(201).json({
       success: true,
@@ -102,22 +121,16 @@ export async function login(req, res) {
       });
     }
 
-    const pool = await getDbPool();
+    const normalizedEmail = email.trim().toLowerCase();
+    let user = users.get(normalizedEmail);
 
-    // Query user by email
-    const userResult = await pool
-      .request()
-      .input('email', sql.NVarChar, email.trim().toLowerCase())
-      .query('SELECT id, name, email, password_hash FROM Users WHERE LOWER(email) = LOWER(@email)');
-
-    if (userResult.recordset.length === 0) {
+    // If user does not exist in memory, allow seamless fallback/auto-registration for prototype usability if needed
+    if (!user) {
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password.',
       });
     }
-
-    const user = userResult.recordset[0];
 
     // Verify hashed password
     const isMatch = await bcrypt.compare(password, user.password_hash);
@@ -176,28 +189,33 @@ export async function logout(req, res) {
  */
 export async function getCurrentUser(req, res) {
   try {
-    const pool = await getDbPool();
+    const userId = req.user?.id;
+    const userEmail = req.user?.email?.toLowerCase();
 
-    const userResult = await pool
-      .request()
-      .input('id', sql.Int, req.user.id)
-      .query('SELECT id, name, email FROM Users WHERE id = @id');
-
-    if (userResult.recordset.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'User profile not found.',
-      });
+    // Look up by email or id
+    let user = userEmail ? users.get(userEmail) : null;
+    if (!user && userId) {
+      for (const u of users.values()) {
+        if (u.id === userId) {
+          user = u;
+          break;
+        }
+      }
     }
 
-    const user = userResult.recordset[0];
+    // If user was signed with valid JWT token but memory restarted, reconstruct from JWT payload
+    const userProfile = user || {
+      id: req.user.id || 1,
+      name: req.user.name || 'User',
+      email: req.user.email || 'user@company.com',
+    };
 
     return res.status(200).json({
       success: true,
       user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
+        id: userProfile.id,
+        name: userProfile.name,
+        email: userProfile.email,
       },
     });
   } catch (error) {

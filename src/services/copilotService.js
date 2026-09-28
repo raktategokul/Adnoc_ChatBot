@@ -112,6 +112,61 @@ function extractActivityContent(activity) {
   };
 }
 
+/**
+ * Checks whether an activity's message text represents an intermediate status / step announcement
+ * (e.g. "Let me first explore the database...", "Now let me fetch the GC records with high-risk performance states...")
+ * rather than the substantive final answer.
+ */
+export function isIntermediateMessage(text) {
+  if (!text) return false;
+  const clean = text.trim();
+  const lower = clean.toLowerCase();
+
+  // If the message contains a Markdown table or multiple structured list items, it is a final/substantive result!
+  if (
+    clean.includes('|') ||
+    clean.split('\n').filter((l) => {
+      const trimmed = l.trim();
+      return trimmed.startsWith('-') || trimmed.startsWith('•') || trimmed.startsWith('*') || /^\d+\./.test(trimmed);
+    }).length >= 2
+  ) {
+    return false;
+  }
+
+  // If text is long (> 280 chars) and does NOT start with a transitional action ("let me", "fetching", etc.), it's likely final
+  const startsWithActionIntent = /^(now\s+|first\s+|next\s+|then\s+|so\s+)?(let\s+me|i\s+will|i'll|i\s+am\s+going\s+to|allow\s+me\s+to|fetching|querying|searching|exploring|retrieving)/i.test(lower);
+  if (clean.length > 280 && !startsWithActionIntent) {
+    return false;
+  }
+
+  // 1. Phrasing where the agent announces an upcoming action / fetch / search / check / query
+  // Examples:
+  // - "Let me first explore the database to find the relevant data!"
+  // - "Now let me fetch the GC records with high-risk performance states (State 3 - Reactive or State 4 - Overloaded)..."
+  // - "Next let me check the alarm KPI data..."
+  // - "I will now query the database..."
+  const actionIntentRegex = /\b(let\s+me|allow\s+me\s+to|i\s+will\s+now|i'll\s+now|i\s+am\s+now|i\s+am\s+going\s+to|now\s+let'?s|first\s+let\s+me|now\s+let\s+me|next\s+let\s+me|then\s+let\s+me|so\s+let\s+me)\b/i;
+  const actionVerbsRegex = /\b(fetch|explore|query|search|find|retrieve|check|look|gather|pull|filter|load|access|inspect|analyze|examine|scan|get)\b/i;
+
+  if (actionIntentRegex.test(lower) && actionVerbsRegex.test(lower)) {
+    return true;
+  }
+
+  // 2. Active progressive verbs with data targets: "fetching the GC records...", "exploring the database..."
+  const progressiveVerbRegex = /\b(fetch|fetching|explore|exploring|query|querying|search|searching|retrieve|retrieving|check|checking|gather|gathering|analyzing|filtering|loading|looking\s+into|looking\s+up|accessing)\b.*\b(database|kpi|alarm|gc|data|record|table|information|state|risk|contractor)/i;
+  if (progressiveVerbRegex.test(lower)) {
+    return true;
+  }
+
+  // 3. Waiting / holding phrases: "please wait...", "one moment...", "working on..."
+  const waitRegex = /\b(one\s+moment|please\s+wait|hold\s+on|working\s+on\s+(it|this|that)|give\s+me\s+a\s+(moment|second|sec)|hang\s+tight|stand\s+by)\b/i;
+  if (waitRegex.test(lower)) {
+    return true;
+  }
+
+  return false;
+}
+
 class CopilotService {
   constructor() {
     this.conversationId = null;
@@ -246,9 +301,15 @@ class CopilotService {
   }
 
   /**
-   * Send user message to Copilot Studio and collect ALL sequential response activities
+   * Send user message to Copilot Studio and collect ALL sequential response activities.
+   * Supports an optional onActivity callback so each response bubble (e.g. status acknowledgment,
+   * followed by database search results, followed by summary/cards) can appear in real-time.
+   *
+   * @param {string} userMessage - Text to send to Copilot Studio
+   * @param {function} [onActivity] - Optional callback (parsedActivity) => void called as each response arrives
+   * @returns {Promise<{ responses: Array<{ text: string, suggestedActions: Array }> }>}
    */
-  async askCopilot(userMessage) {
+  async askCopilot(userMessage, onActivity = null) {
     if (!this.isConfigured()) {
       return {
         responses: [
@@ -264,7 +325,36 @@ class CopilotService {
     try {
       await this.ensureConversation();
 
-      // Post activity to Copilot Studio
+      // Synchronize watermark and register any lingering activity IDs before posting new prompt
+      const seenActivityIds = new Set();
+      if (this.conversationId && this.token) {
+        try {
+          const syncUrl = new URL(
+            `https://directline.botframework.com/v3/directline/conversations/${this.conversationId}/activities`
+          );
+          if (this.watermark) {
+            syncUrl.searchParams.set('watermark', this.watermark);
+          }
+          const syncRes = await fetch(syncUrl.toString(), {
+            headers: { Authorization: `Bearer ${this.token}` },
+          });
+          if (syncRes.ok) {
+            const syncData = await syncRes.json();
+            if (syncData.watermark) {
+              this.watermark = syncData.watermark;
+            }
+            if (Array.isArray(syncData.activities)) {
+              for (const act of syncData.activities) {
+                if (act.id) seenActivityIds.add(act.id);
+              }
+            }
+          }
+        } catch {
+          // Non-blocking pre-sync
+        }
+      }
+
+      // Post user message activity to Copilot Studio
       const postRes = await fetch(
         `https://directline.botframework.com/v3/directline/conversations/${this.conversationId}/activities`,
         {
@@ -285,14 +375,17 @@ class CopilotService {
         throw new Error(`Failed to send activity to Copilot Studio: HTTP ${postRes.status}`);
       }
 
-      // Collect ALL bot response activities (Copilot Studio can send multiple activities with slight pauses)
       const allResponses = [];
       const startTime = Date.now();
-      const maxWaitMs = 18000;
-      let idlePollsAfterFirstMessage = 0;
+      const maxTurnWaitMs = 75000; // Allow ample time for multi-step Copilot plugins and database lookups
+      const pollDelayMs = 700; // Fast 700ms polling for responsive UX
+      let consecutiveEmptyPolls = 0;
+      let lastActivityTime = Date.now();
+      let waitingForSubstantiveAnswer = false;
+      let hasSubstantiveAnswer = false;
 
-      while (Date.now() - startTime < maxWaitMs) {
-        await new Promise((r) => setTimeout(r, 900));
+      while (Date.now() - startTime < maxTurnWaitMs) {
+        await new Promise((r) => setTimeout(r, pollDelayMs));
 
         const url = new URL(
           `https://directline.botframework.com/v3/directline/conversations/${this.conversationId}/activities`
@@ -306,36 +399,91 @@ class CopilotService {
             headers: { Authorization: `Bearer ${this.token}` },
           });
 
-          if (pollRes.ok) {
-            const pollData = await pollRes.json();
-            if (pollData.watermark) {
-              this.watermark = pollData.watermark;
+          if (!pollRes.ok) {
+            continue;
+          }
+
+          const pollData = await pollRes.json();
+          if (pollData.watermark) {
+            this.watermark = pollData.watermark;
+          }
+
+          const rawActivities = pollData.activities || [];
+          let newMessagesInThisPoll = 0;
+
+          for (const act of rawActivities) {
+            // Skip user's own echoed messages
+            if (act.from?.id === this.userId) continue;
+
+            // Skip already seen activities
+            if (act.id && seenActivityIds.has(act.id)) continue;
+            if (act.id) seenActivityIds.add(act.id);
+
+            // Handle typing indicator from Copilot Studio
+            if (act.type === 'typing') {
+              lastActivityTime = Date.now();
+              consecutiveEmptyPolls = 0;
+              continue;
             }
 
-            // Filter for new messages from the bot
-            const newActivities = (pollData.activities || []).filter(
-              (a) => a.from?.id !== this.userId && (a.type === 'message' || (a.attachments && a.attachments.length > 0))
-            );
+            // Handle bot message activities
+            if (act.type === 'message' || (act.attachments && act.attachments.length > 0)) {
+              const parsed = extractActivityContent(act);
+              if (parsed.text && parsed.text.trim()) {
+                allResponses.push(parsed);
+                newMessagesInThisPoll++;
+                lastActivityTime = Date.now();
+                consecutiveEmptyPolls = 0;
 
-            if (newActivities.length > 0) {
-              idlePollsAfterFirstMessage = 0;
-              for (const act of newActivities) {
-                const parsed = extractActivityContent(act);
-                if (parsed.text) {
-                  allResponses.push(parsed);
+                // Check if this is an intermediate announcement (e.g. "Let me first explore the database...", "Now let me fetch the GC records...")
+                const isIntermediate = isIntermediateMessage(parsed.text);
+                parsed.isIntermediate = isIntermediate;
+
+                if (isIntermediate) {
+                  waitingForSubstantiveAnswer = true;
+                  hasSubstantiveAnswer = false;
+                } else {
+                  hasSubstantiveAnswer = true;
+                  waitingForSubstantiveAnswer = false;
+                }
+
+                // Deliver immediately via progressive streaming callback if provided
+                if (typeof onActivity === 'function') {
+                  try {
+                    onActivity(parsed);
+                  } catch (cbErr) {
+                    console.warn('Direct Line onActivity callback error:', cbErr);
+                  }
                 }
               }
+            }
+          }
+
+          if (newMessagesInThisPoll === 0) {
+            consecutiveEmptyPolls++;
+
+            // If an intermediate acknowledgment was received (e.g. "Now let me fetch the GC records..."),
+            // Copilot Studio is querying the database or plugin. DO NOT break prematurely!
+            if (waitingForSubstantiveAnswer) {
+              // Wait up to 50 seconds after acknowledgment for the database search to finish
+              if (Date.now() - lastActivityTime > 50000) {
+                break;
+              }
+            } else if (hasSubstantiveAnswer) {
+              // Substantive final answer received.
+              // Wait for 3 empty polls (~2s) of silence to catch any immediate follow-ups or action chips,
+              // then conclude the turn so no lingering typing bubble stays.
+              if (consecutiveEmptyPolls >= 3) {
+                break;
+              }
             } else if (allResponses.length > 0) {
-              // We already collected at least one response, check if bot has finished talking
-              idlePollsAfterFirstMessage++;
-              // If 2 polls (approx 1.8 seconds) have passed without any new activity, the turn is complete!
-              if (idlePollsAfterFirstMessage >= 2) {
+              if (consecutiveEmptyPolls >= 3) {
                 break;
               }
             }
           }
         } catch (pollErr) {
-          console.warn('Direct line poll error:', pollErr);
+          console.warn('Direct Line poll error:', pollErr);
         }
       }
 

@@ -1771,6 +1771,23 @@ html, body {
   z-index: 1000;
   animation: oasisSlideUp 0.24s cubic-bezier(0.16, 1, 0.3, 1);
   backdrop-filter: blur(16px);
+  transition: width 0.22s ease, height 0.22s ease, border-radius 0.22s ease;
+}
+
+.oasis-widget-popup.is-dragging {
+  user-select: none !important;
+  cursor: grabbing !important;
+  box-shadow: 0 32px 80px -10px rgba(0, 0, 0, 0.95), 0 0 0 1.5px rgba(56, 189, 248, 0.4);
+  transition: none !important;
+}
+
+.oasis-widget-popup.is-maximized {
+  border-radius: 16px;
+  box-shadow: 0 32px 80px -12px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(56, 189, 248, 0.25);
+}
+
+.oasis-widget-popup.is-maximized .oasis-msg-content-col {
+  max-width: 90%;
 }
 
 /* Widget Header */
@@ -1783,14 +1800,51 @@ html, body {
   justify-content: space-between;
   gap: 10px;
   flex-shrink: 0;
+  cursor: grab;
+  user-select: none;
+}
+
+.oasis-widget-header:active,
+.oasis-widget-popup.is-dragging .oasis-widget-header {
+  cursor: grabbing;
 }
 
 .oasis-header-left {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   min-width: 0;
   flex: 1;
+}
+
+/* Copilot Style Drag Handle Button */
+.oasis-drag-handle-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  transition: all 0.15s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.oasis-drag-handle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.25);
+}
+
+.oasis-drag-handle-btn:active,
+.oasis-widget-popup.is-dragging .oasis-drag-handle-btn {
+  cursor: grabbing;
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
 }
 
 .oasis-header-titles {
@@ -1836,6 +1890,15 @@ html, body {
   align-items: center;
   gap: 4px;
   flex-shrink: 0;
+  cursor: default;
+}
+
+.oasis-window-divider {
+  width: 1px;
+  height: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 2px;
+  flex-shrink: 0;
 }
 
 .oasis-icon-btn {
@@ -1860,8 +1923,23 @@ html, body {
   border-color: rgba(255, 255, 255, 0.15);
 }
 
+.oasis-maximize-btn:hover,
+.oasis-maximize-btn.active {
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.3);
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.oasis-minimize-btn:hover {
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.3);
+  background: rgba(251, 191, 36, 0.1);
+}
+
 .oasis-close-btn:hover {
   color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.1);
 }
 
 /* History button in top right */
@@ -2103,6 +2181,296 @@ html, body {
 
 .oasis-msg-text {
   white-space: pre-wrap;
+}
+
+/* ==========================================================================
+   OASIS AI COPILOT: THINKING SECTION & RICH MARKDOWN / TABLE STYLES
+   ========================================================================== */
+
+/* Thinking Section Box */
+.oasis-thinking-box {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 9px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.oasis-thinking-box.in-progress {
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.08);
+}
+
+.oasis-thinking-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 11px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 11.5px;
+  font-family: inherit;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.oasis-thinking-toggle:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #e2e8f0;
+}
+
+.oasis-thinking-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.oasis-thinking-spinner-icon {
+  color: #38bdf8;
+  display: inline-flex;
+}
+
+.oasis-spin {
+  animation: oasisSpin 1s linear infinite;
+}
+
+@keyframes oasisSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.oasis-thinking-brain-icon {
+  color: #60a5fa;
+  display: inline-flex;
+}
+
+.oasis-thinking-label {
+  letter-spacing: 0.2px;
+}
+
+.oasis-thinking-box.in-progress .oasis-thinking-label {
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.oasis-thinking-chevron {
+  display: inline-flex;
+  transition: transform 0.2s ease;
+  color: #64748b;
+}
+
+.oasis-thinking-chevron.open {
+  transform: rotate(180deg);
+}
+
+.oasis-thinking-content {
+  padding: 8px 12px 10px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(10, 15, 29, 0.5);
+  font-size: 11.5px;
+  color: #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.oasis-thinking-step-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.45;
+}
+
+.oasis-thinking-step-bullet {
+  color: #10b981;
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.oasis-thinking-step-text {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.oasis-thinking-active-indicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  color: #38bdf8;
+  font-size: 11px;
+}
+
+.oasis-thinking-mini-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #38bdf8;
+  animation: oasisTyping 1.2s infinite ease-in-out;
+}
+
+.oasis-thinking-mini-dot:nth-child(1) { animation-delay: 0s; }
+.oasis-thinking-mini-dot:nth-child(2) { animation-delay: 0.2s; }
+.oasis-thinking-mini-dot:nth-child(3) { animation-delay: 0.4s; }
+
+.oasis-thinking-status-text {
+  margin-left: 2px;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   RICH MARKDOWN & TABLE RENDERING
+   ========================================================================== */
+.oasis-markdown-body {
+  word-break: break-word;
+  line-height: 1.6;
+  font-size: 12.5px;
+  color: #e2e8f0;
+}
+
+.oasis-markdown-body p {
+  margin: 0 0 10px 0;
+}
+
+.oasis-markdown-body p:last-child {
+  margin-bottom: 0;
+}
+
+.oasis-markdown-body strong {
+  color: #93c5fd;
+  font-weight: 600;
+}
+
+.oasis-markdown-body em {
+  color: #cbd5e1;
+  font-style: italic;
+}
+
+.oasis-markdown-body h1,
+.oasis-markdown-body h2,
+.oasis-markdown-body h3,
+.oasis-markdown-body h4 {
+  color: #f8fafc;
+  font-weight: 700;
+  margin: 14px 0 8px 0;
+  line-height: 1.35;
+}
+
+.oasis-markdown-body h1 { font-size: 15px; }
+.oasis-markdown-body h2 {
+  font-size: 14px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.oasis-markdown-body h3 { font-size: 13px; color: #93c5fd; }
+
+.oasis-markdown-body blockquote {
+  margin: 10px 0;
+  padding: 8px 12px;
+  background: rgba(30, 58, 138, 0.2);
+  border-left: 3px solid #3b82f6;
+  border-radius: 0 6px 6px 0;
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.oasis-markdown-body blockquote p {
+  margin: 0;
+}
+
+.oasis-markdown-body hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 14px 0;
+}
+
+.oasis-markdown-body ul,
+.oasis-markdown-body ol {
+  margin: 6px 0 10px 0;
+  padding-left: 18px;
+}
+
+.oasis-markdown-body li {
+  margin: 3px 0;
+  line-height: 1.5;
+}
+
+/* Beautiful Enterprise Tables */
+.oasis-markdown-body table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 12px 0;
+  font-size: 11.5px;
+  background: rgba(10, 15, 29, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.oasis-markdown-body table::-webkit-scrollbar {
+  height: 5px;
+}
+
+.oasis-markdown-body table::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.oasis-markdown-body table::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.3);
+  border-radius: 3px;
+}
+
+.oasis-markdown-body th {
+  background: rgba(23, 37, 84, 0.75);
+  color: #93c5fd;
+  font-weight: 600;
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 2px solid rgba(59, 130, 246, 0.35);
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  font-size: 11px;
+}
+
+.oasis-markdown-body td {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.oasis-markdown-body tr:last-child td {
+  border-bottom: none;
+}
+
+.oasis-markdown-body tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.oasis-markdown-body tbody tr:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.oasis-markdown-body code {
+  background: rgba(15, 23, 42, 0.8);
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 11px;
+  color: #38bdf8;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* Clickable KPI Links inside welcome card */

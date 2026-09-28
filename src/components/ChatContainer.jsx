@@ -4,7 +4,6 @@ import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import QuickPrompts from './QuickPrompts';
 import CopilotConfigModal from './CopilotConfigModal';
-import { conversationService } from '../services/conversationService';
 import { copilotService } from '../services/copilotService';
 
 /**
@@ -42,22 +41,24 @@ function generateDynamicTitle(text) {
 }
 
 export default function ChatContainer() {
-  const [conversations, setConversations] = useState([]);
-  const [activeConversationId, setActiveConversationId] = useState(null);
+  // Session-only conversations and messages kept exclusively in React state
+  const [conversations, setConversations] = useState([
+    {
+      id: 'session-chat-1',
+      title: 'New Chat',
+      messages: [],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+  ]);
+  const [activeConversationId, setActiveConversationId] = useState('session-chat-1');
   const [messages, setMessages] = useState([]);
-  const [isLoadingConversations, setIsLoadingConversations] = useState(true);
-  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
   const [isCopilotReady, setIsCopilotReady] = useState(copilotService.isConfigured());
 
   const messagesEndRef = useRef(null);
   const scrollAreaRef = useRef(null);
-
-  // Load user conversations from SQL Server on mount
-  useEffect(() => {
-    loadUserConversations();
-  }, []);
 
   // Auto-scroll to bottom as new messages arrive
   useEffect(() => {
@@ -69,59 +70,29 @@ export default function ChatContainer() {
     }
   }, [messages, isSending]);
 
-  async function loadUserConversations() {
-    setIsLoadingConversations(true);
-    try {
-      const data = await conversationService.getConversations();
-      setConversations(data);
-
-      if (data.length > 0) {
-        const firstConvId = data[0].id;
-        setActiveConversationId(firstConvId);
-        await loadMessages(firstConvId);
-      } else {
-        const newConv = await conversationService.createConversation('New Chat');
-        setConversations([newConv]);
-        setActiveConversationId(newConv.id);
-        setMessages([]);
-      }
-    } catch (err) {
-      console.error('Error fetching conversations from SQL Server:', err);
-    } finally {
-      setIsLoadingConversations(false);
-    }
-  }
-
-  async function loadMessages(convId) {
-    if (!convId) return;
-    setIsLoadingMessages(true);
-    try {
-      const history = await conversationService.getMessages(convId);
-      setMessages(history);
-    } catch (err) {
-      console.error('Error fetching messages from SQL Server:', err);
-      setMessages([]);
-    } finally {
-      setIsLoadingMessages(false);
-    }
-  }
-
   // Handle selecting a conversation from the sidebar history
-  const handleSelectConversation = async (convId) => {
+  const handleSelectConversation = (convId) => {
     if (convId === activeConversationId) return;
     setActiveConversationId(convId);
-    await loadMessages(convId);
+    const target = conversations.find((c) => c.id === convId);
+    setMessages(target ? target.messages || [] : []);
   };
 
   // Handle "+ New Chat"
-  const handleNewChat = async () => {
-    try {
-      const newConv = await conversationService.createConversation('New Chat');
-      setConversations((prev) => [newConv, ...prev]);
-      setActiveConversationId(newConv.id);
-      setMessages([]);
-    } catch (err) {
-      console.error('Error creating new conversation in SQL Server:', err);
+  const handleNewChat = () => {
+    const newId = `session-chat-${Date.now()}`;
+    const newConv = {
+      id: newId,
+      title: 'New Chat',
+      messages: [],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    setConversations((prev) => [newConv, ...prev]);
+    setActiveConversationId(newId);
+    setMessages([]);
+    if (typeof copilotService.resetConversation === 'function') {
+      copilotService.resetConversation();
     }
   };
 
@@ -132,82 +103,112 @@ export default function ChatContainer() {
       return;
     }
 
-    if (!text.trim() || isSending || !activeConversationId) return;
+    if (!text || !text.trim() || isSending) return;
 
     const userText = text.trim();
-    const tempUserMsg = {
-      id: 'temp-' + Date.now(),
-      conversation_id: activeConversationId,
+    let currentId = activeConversationId;
+
+    const userMsg = {
+      id: 'user-' + Date.now(),
       role: 'user',
       content: userText,
       created_at: new Date().toISOString(),
     };
 
-    // 1. Optimistically display user input message in chat window
-    setMessages((prev) => [...prev, tempUserMsg]);
+    if (!currentId || !conversations.some((c) => c.id === currentId)) {
+      currentId = `session-chat-${Date.now()}`;
+      const shortTitle = generateDynamicTitle(userText);
+      const newConv = {
+        id: currentId,
+        title: shortTitle,
+        messages: [userMsg],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setConversations((prev) => [newConv, ...prev]);
+      setActiveConversationId(currentId);
+      setMessages([userMsg]);
+    } else {
+      setConversations((prev) =>
+        prev.map((c) => {
+          if (c.id === currentId) {
+            const shortTitle = (c.title === 'New Chat' || !c.title) ? generateDynamicTitle(userText) : c.title;
+            return {
+              ...c,
+              title: shortTitle,
+              updated_at: new Date().toISOString(),
+              messages: [...(c.messages || []), userMsg],
+            };
+          }
+          return c;
+        })
+      );
+      setMessages((prev) => [...prev, userMsg]);
+    }
+
     setIsSending(true);
 
     try {
-      // 2. Store input message in SQL Server database
-      await conversationService.addMessage(activeConversationId, 'user', userText);
+      let messageSequenceIndex = 0;
+      const seenTexts = new Set();
 
-      // 3. Dynamic short title for the chat as per user interaction
-      const currentConv = conversations.find((c) => c.id === activeConversationId);
-      if (currentConv && currentConv.title === 'New Chat') {
-        const shortTitle = generateDynamicTitle(userText);
-        try {
-          await conversationService.updateConversation(activeConversationId, shortTitle);
-          setConversations((prev) =>
-            prev.map((c) => (c.id === activeConversationId ? { ...c, title: shortTitle } : c))
-          );
-        } catch (titleErr) {
-          console.warn('Could not update dynamic title:', titleErr);
-        }
-      }
-
-      // 4. Send message to Live Copilot Studio agent and collect all responses
-      const copilotResult = await copilotService.askCopilot(userText);
-      const responsesList =
-        copilotResult.responses && Array.isArray(copilotResult.responses)
-          ? copilotResult.responses
-          : [copilotResult];
-
-      // 5. Store and display EACH response in SQL Server and chat window
-      const newBotMessages = [];
-      for (let i = 0; i < responsesList.length; i++) {
-        const resp = responsesList[i];
-        const outputText = resp.text || '';
+      const handleIncomingActivity = async (resp) => {
+        const outputText = (resp.text || '').trim();
         const suggestedActions = resp.suggestedActions || [];
+        if (!outputText) return;
 
-        if (outputText) {
-          // Store each output message in SQL Server database
-          await conversationService.addMessage(activeConversationId, 'assistant', outputText);
+        if (seenTexts.has(outputText)) return;
+        seenTexts.add(outputText);
 
-          // Add to local state
-          newBotMessages.push({
-            id: 'bot-' + Date.now() + '-' + i,
-            conversation_id: activeConversationId,
-            role: 'assistant',
-            content: outputText,
-            suggestedActions,
-            created_at: new Date().toISOString(),
-          });
+        messageSequenceIndex++;
+        const msgId = `bot-${Date.now()}-${messageSequenceIndex}`;
+
+        const botMsg = {
+          id: msgId,
+          role: 'assistant',
+          content: outputText,
+          suggestedActions,
+          created_at: new Date().toISOString(),
+        };
+
+        setMessages((prev) => [...prev, botMsg]);
+        setConversations((prev) =>
+          prev.map((c) => {
+            if (c.id === currentId) {
+              return {
+                ...c,
+                updated_at: new Date().toISOString(),
+                messages: [...(c.messages || []), botMsg],
+              };
+            }
+            return c;
+          })
+        );
+      };
+
+      const copilotResult = await copilotService.askCopilot(userText, handleIncomingActivity);
+
+      if (seenTexts.size === 0 && copilotResult?.responses?.length > 0) {
+        for (const resp of copilotResult.responses) {
+          await handleIncomingActivity(resp);
         }
-      }
-
-      if (newBotMessages.length > 0) {
-        setMessages((prev) => [...prev, ...newBotMessages]);
       }
     } catch (err) {
       console.error('Error in chat exchange:', err);
       const errorMsg = {
         id: 'err-' + Date.now(),
-        conversation_id: activeConversationId,
         role: 'assistant',
         content: '⚠️ Failed to complete response from Copilot Studio. Please try again.',
         created_at: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, errorMsg]);
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.id === currentId
+            ? { ...c, updated_at: new Date().toISOString(), messages: [...(c.messages || []), errorMsg] }
+            : c
+        )
+      );
     } finally {
       setIsSending(false);
     }
@@ -219,35 +220,25 @@ export default function ChatContainer() {
   };
 
   // Handle renaming a conversation
-  const handleRenameConversation = async (convId, newTitle) => {
+  const handleRenameConversation = (convId, newTitle) => {
     if (!newTitle || !newTitle.trim()) return;
-    try {
-      await conversationService.updateConversation(convId, newTitle.trim());
-      setConversations((prev) =>
-        prev.map((c) => (c.id === convId ? { ...c, title: newTitle.trim() } : c))
-      );
-    } catch (err) {
-      console.error('Error renaming conversation:', err);
-    }
+    setConversations((prev) =>
+      prev.map((c) => (c.id === convId ? { ...c, title: newTitle.trim() } : c))
+    );
   };
 
   // Handle deleting a conversation
-  const handleDeleteConversation = async (convId) => {
-    try {
-      await conversationService.deleteConversation(convId);
-      const remaining = conversations.filter((c) => c.id !== convId);
-      setConversations(remaining);
+  const handleDeleteConversation = (convId) => {
+    const remaining = conversations.filter((c) => c.id !== convId);
+    setConversations(remaining);
 
-      if (activeConversationId === convId) {
-        if (remaining.length > 0) {
-          setActiveConversationId(remaining[0].id);
-          await loadMessages(remaining[0].id);
-        } else {
-          await handleNewChat();
-        }
+    if (activeConversationId === convId) {
+      if (remaining.length > 0) {
+        setActiveConversationId(remaining[0].id);
+        setMessages(remaining[0].messages || []);
+      } else {
+        handleNewChat();
       }
-    } catch (err) {
-      console.error('Error deleting conversation:', err);
     }
   };
 
@@ -256,7 +247,7 @@ export default function ChatContainer() {
 
   return (
     <main className="main-chat-area" role="main">
-      {/* History Sidebar: Lists all past conversations with dynamic short titles like ChatGPT */}
+      {/* History Sidebar: Lists current session conversations with dynamic short titles */}
       <Sidebar
         conversations={conversations}
         activeConversationId={activeConversationId}
@@ -264,12 +255,12 @@ export default function ChatContainer() {
         onNewChat={handleNewChat}
         onDeleteConversation={handleDeleteConversation}
         onRenameConversation={handleRenameConversation}
-        isLoading={isLoadingConversations}
+        isLoading={false}
       />
 
       {/* Main Card: Live Copilot Chat Window */}
       <div className="chat-card">
-        {/* Chat Card Header: Clean, unified without any extra tabs */}
+        {/* Chat Card Header */}
         <div className="chat-card-header">
           <div className="chat-header-info">
             <div className="chat-ai-avatar" aria-label="AI Assistant">
@@ -342,12 +333,7 @@ export default function ChatContainer() {
         <div className="chat-content-container">
           <div className="chat-messages-scroll-area" id="chat-messages-scroll-area" ref={scrollAreaRef}>
             <div className="messages-inner-container">
-              {isLoadingMessages ? (
-                <div className="chat-welcome-placeholder">
-                  <div className="sidebar-mini-spinner" style={{ width: 28, height: 28, marginBottom: 12 }}></div>
-                  <p>Loading conversation history from database...</p>
-                </div>
-              ) : messages.length === 0 ? (
+              {messages.length === 0 ? (
                 <div className="chat-welcome-placeholder">
                   <div className="chat-welcome-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -401,14 +387,14 @@ export default function ChatContainer() {
           </div>
 
           {/* Quick Prompts for starting a new chat */}
-          {messages.length === 0 && !isLoadingMessages && (
+          {messages.length === 0 && (
             <QuickPrompts onSelectPrompt={handleSendMessage} />
           )}
 
           {/* Chat Input Bar */}
           <ChatInput
             onSendMessage={handleSendMessage}
-            disabled={isSending || isLoadingMessages}
+            disabled={isSending}
             placeholder="Type your message..."
           />
         </div>

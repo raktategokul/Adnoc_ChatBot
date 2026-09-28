@@ -1,22 +1,14 @@
 import React, { useState } from 'react';
-import { useAuth } from '../auth/AuthContext';
 import OasisChatWidget from './OasisChatWidget';
 import OasisLauncherButton from './OasisLauncherButton';
 
 export default function MainWebsite() {
-  const { user, logout } = useAuth();
   // Start with chat minimized so user only sees the orb launcher button
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  const displayName = user?.name || 'Gokul';
-  const displayEmail = user?.email || 'user@company.com';
-  const initial = displayName.charAt(0).toUpperCase();
-
-  const handleLogout = async () => {
-    sessionStorage.removeItem('oasis_session_active_conv_id');
-    sessionStorage.removeItem('oasis_session_initialized');
-    await logout();
-  };
+  const displayName = 'Gokul';
+  const displayEmail = 'user@company.com';
+  const initial = 'G';
 
   return (
     <div className="oasis-website-layout">
@@ -69,21 +61,10 @@ export default function MainWebsite() {
             </svg>
           </div>
 
-          {/* User Profile & Logout */}
-          <div className="oasis-user-pill" title={`Signed in as ${displayEmail}`}>
+          {/* User Profile */}
+          <div className="oasis-user-pill" title={`ADNOC Operator: ${displayEmail}`}>
             <div className="oasis-user-avatar">{initial}</div>
             <span className="oasis-user-name">{displayName}</span>
-            <button
-              className="oasis-logout-btn"
-              onClick={handleLogout}
-              title="Sign Out"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                <polyline points="16 17 21 12 16 7"></polyline>
-                <line x1="21" y1="12" x2="9" y2="12"></line>
-              </svg>
-            </button>
           </div>
         </div>
       </header>

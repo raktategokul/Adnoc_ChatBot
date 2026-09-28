@@ -1,7 +1,7 @@
 {
   "name": "nexusai-backend",
   "version": "1.0.0",
-  "description": "Backend API for NexusAI authentication and SQL Server integration",
+  "description": "Backend API for NexusAI authentication",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -13,8 +13,6 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2",
-    "msnodesqlv8": "^4.2.1",
-    "mssql": "^11.0.1"
+    "jsonwebtoken": "^9.0.2"
   }
 }

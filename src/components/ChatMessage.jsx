@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import MarkdownRenderer from './MarkdownRenderer';
 
 export default function ChatMessage({ message, onSuggestedActionClick }) {
   const [copied, setCopied] = useState(false);
@@ -43,7 +44,11 @@ export default function ChatMessage({ message, onSuggestedActionClick }) {
 
       <div className="message-content-wrapper">
         <div className={`message-bubble ${isBot ? 'bot-bubble' : 'user-bubble'}`}>
-          <div className="message-text">{textContent}</div>
+          {isBot ? (
+            <MarkdownRenderer content={textContent} />
+          ) : (
+            <div className="message-text">{textContent}</div>
+          )}
         </div>
 
         {/* Suggested actions / buttons if present */}
