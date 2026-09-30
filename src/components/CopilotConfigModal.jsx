@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { COPILOT_CONFIG } from '../services/copilotService';
+import { useTheme } from '../context/ThemeContext';
 
 export default function CopilotConfigModal({ isOpen, onClose, onSave }) {
+  const { theme, setTheme } = useTheme();
   const [tokenEndpoint, setTokenEndpoint] = useState(COPILOT_CONFIG.tokenEndpoint || '');
   const [directLineSecret, setDirectLineSecret] = useState(COPILOT_CONFIG.directLineSecret || '');
   const [showSecret, setShowSecret] = useState(false);
@@ -137,6 +139,51 @@ export default function CopilotConfigModal({ isOpen, onClose, onSave }) {
             </div>
             <span className="oasis-field-help">
               Azure Bot / Copilot Studio: <em>Channels &gt; Direct Line &gt; Secret Keys</em>
+            </span>
+          </div>
+
+          {/* Interface Appearance Theme Selector */}
+          <div className="oasis-form-field">
+            <div className="oasis-field-label-row">
+              <label className="oasis-field-label">
+                Interface Appearance
+              </label>
+              <span className="oasis-theme-current-label">
+                Active: <strong>{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</strong>
+              </span>
+            </div>
+            <div className="oasis-theme-choice-row">
+              <button
+                type="button"
+                className={`oasis-theme-choice-btn ${theme === 'dark' ? 'active' : ''}`}
+                onClick={() => setTheme('dark')}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+                <span>Dark Theme</span>
+              </button>
+              <button
+                type="button"
+                className={`oasis-theme-choice-btn ${theme === 'light' ? 'active' : ''}`}
+                onClick={() => setTheme('light')}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                  <circle cx="12" cy="12" r="5"></circle>
+                  <line x1="12" y1="1" x2="12" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="23"></line>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                  <line x1="1" y1="12" x2="3" y2="12"></line>
+                  <line x1="21" y1="12" x2="23" y2="12"></line>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <span>Light Theme</span>
+              </button>
+            </div>
+            <span className="oasis-field-help">
+              Applies instantly across the entire dashboard and the AI Copilot window.
             </span>
           </div>
 

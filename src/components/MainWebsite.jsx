@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import OasisChatWidget from './OasisChatWidget';
 import OasisLauncherButton from './OasisLauncherButton';
+import { useTheme } from '../context/ThemeContext';
 
 export default function MainWebsite() {
   // Start with chat minimized so user only sees the orb launcher button
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const { theme, toggleTheme, isDark } = useTheme();
 
   const displayName = 'Gokul';
   const displayEmail = 'user@company.com';
   const initial = 'G';
 
   return (
-    <div className="oasis-website-layout">
+    <div className={`oasis-website-layout ${theme}-mode`}>
       {/* Top Application Bar matching ADNOC OASIS Header */}
       <header className="oasis-topbar">
         <div className="oasis-topbar-left">
@@ -60,6 +62,39 @@ export default function MainWebsite() {
               <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>
           </div>
+
+          {/* Theme Option Pill (Dark / Light) */}
+          <button
+            type="button"
+            className="oasis-theme-toggle-pill"
+            onClick={toggleTheme}
+            title={isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+            aria-label={isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+          >
+            {isDark ? (
+              <>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" className="oasis-theme-icon sun">
+                  <circle cx="12" cy="12" r="5"></circle>
+                  <line x1="12" y1="1" x2="12" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="23"></line>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                  <line x1="1" y1="12" x2="3" y2="12"></line>
+                  <line x1="21" y1="12" x2="23" y2="12"></line>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <span>Light</span>
+              </>
+            ) : (
+              <>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" className="oasis-theme-icon moon">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+                <span>Dark</span>
+              </>
+            )}
+          </button>
 
           {/* User Profile */}
           <div className="oasis-user-pill" title={`ADNOC Operator: ${displayEmail}`}>

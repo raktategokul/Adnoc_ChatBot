@@ -2985,4 +2985,801 @@ html, body {
   transform: translateY(-1px);
 }
 
+/* ==========================================================================
+   THEME SWITCHER CONTROLS & APPEARANCE PREFERENCES
+   ========================================================================== */
+
+/* Topbar Theme Toggle Pill */
+.oasis-theme-toggle-pill {
+  background: #111a28;
+  border: 1px solid #1e2c3e;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 11.5px;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+  font-weight: 500;
+  user-select: none;
+}
+
+.oasis-theme-toggle-pill:hover {
+  background: #182538;
+  border-color: #38bdf8;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.oasis-theme-icon {
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.oasis-theme-icon.sun {
+  color: #f59e0b;
+}
+
+.oasis-theme-icon.moon {
+  color: #818cf8;
+}
+
+.oasis-theme-toggle-pill:hover .oasis-theme-icon {
+  transform: rotate(25deg) scale(1.1);
+}
+
+/* Chatbot Header Theme Button */
+.oasis-icon-btn.oasis-theme-btn {
+  position: relative;
+}
+
+.oasis-icon-btn.oasis-theme-btn:hover {
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.oasis-icon-btn.oasis-theme-btn:hover .oasis-theme-icon {
+  transform: rotate(20deg);
+}
+
+/* Header.jsx Theme Toggle Button */
+.header-theme-toggle-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.header-theme-toggle-btn:hover {
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+  border-color: var(--color-primary-border);
+}
+
+/* Config Modal Theme Selector Row */
+.oasis-theme-current-label {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.oasis-theme-choice-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.oasis-theme-choice-btn {
+  background: #09101b;
+  border: 1px solid #1c2b3d;
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #94a3b8;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.oasis-theme-choice-btn:hover {
+  background: #111a28;
+  color: #e2e8f0;
+  border-color: #2b3d55;
+}
+
+.oasis-theme-choice-btn.active {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  font-weight: 600;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.15);
+}
+
+/* ==========================================================================
+   LIGHT THEME: ADNOC OASIS DASHBOARD & AI COPILOT CHATBOT
+   ========================================================================== */
+
+/* Root & Body Light Theme */
+[data-theme="light"],
+body.light-theme {
+  --color-bg: #f8fafc;
+  --color-text: #0f172a;
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* 1. Main Website Layout */
+[data-theme="light"] .oasis-website-layout,
+.oasis-website-layout.light-mode {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* Top Navigation Bar */
+[data-theme="light"] .oasis-topbar,
+.oasis-website-layout.light-mode .oasis-topbar {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .adnoc-oasis-title,
+.oasis-website-layout.light-mode .adnoc-oasis-title {
+  color: #0f172a;
+}
+
+[data-theme="light"] .adnoc-oasis-divider,
+.oasis-website-layout.light-mode .adnoc-oasis-divider {
+  color: #cbd5e1;
+}
+
+[data-theme="light"] .adnoc-oasis-tagline,
+.oasis-website-layout.light-mode .adnoc-oasis-tagline {
+  color: #64748b;
+}
+
+[data-theme="light"] .oasis-filter-pill,
+.oasis-website-layout.light-mode .oasis-filter-pill {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+[data-theme="light"] .oasis-filter-pill:hover,
+.oasis-website-layout.light-mode .oasis-filter-pill:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+[data-theme="light"] .oasis-theme-toggle-pill,
+.oasis-website-layout.light-mode .oasis-theme-toggle-pill {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #334155;
+}
+
+[data-theme="light"] .oasis-theme-toggle-pill:hover,
+.oasis-website-layout.light-mode .oasis-theme-toggle-pill:hover {
+  background: #f1f5f9;
+  border-color: #0284c7;
+  color: #0284c7;
+}
+
+[data-theme="light"] .oasis-user-pill,
+.oasis-website-layout.light-mode .oasis-user-pill {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .oasis-user-name,
+.oasis-website-layout.light-mode .oasis-user-name {
+  color: #1e293b;
+}
+
+/* Left Sidebar Rail */
+[data-theme="light"] .oasis-left-rail,
+.oasis-website-layout.light-mode .oasis-left-rail {
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .oasis-rail-btn,
+.oasis-website-layout.light-mode .oasis-rail-btn {
+  color: #64748b;
+}
+
+[data-theme="light"] .oasis-rail-btn:hover,
+[data-theme="light"] .oasis-rail-btn.active,
+.oasis-website-layout.light-mode .oasis-rail-btn:hover,
+.oasis-website-layout.light-mode .oasis-rail-btn.active {
+  color: #0284c7;
+  background: rgba(2, 132, 199, 0.1);
+}
+
+[data-theme="light"] .oasis-user-circle,
+.oasis-website-layout.light-mode .oasis-user-circle {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-color: #bae6fd;
+}
+
+/* Dashboard Canvas & Cards */
+[data-theme="light"] .oasis-dashboard-canvas,
+.oasis-website-layout.light-mode .oasis-dashboard-canvas {
+  background: radial-gradient(circle at 70% 20%, #eff6ff 0%, #f8fafc 100%);
+}
+
+[data-theme="light"] .oasis-dashboard-title,
+.oasis-website-layout.light-mode .oasis-dashboard-title {
+  color: #0f172a;
+}
+
+[data-theme="light"] .oasis-dashboard-unit-badge,
+.oasis-website-layout.light-mode .oasis-dashboard-unit-badge {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #64748b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .oasis-preview-card,
+.oasis-website-layout.light-mode .oasis-preview-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+}
+
+[data-theme="light"] .oasis-card-label,
+.oasis-website-layout.light-mode .oasis-card-label {
+  color: #0f172a;
+}
+
+[data-theme="light"] .oasis-card-sub,
+.oasis-website-layout.light-mode .oasis-card-sub {
+  color: #059669;
+}
+
+[data-theme="light"] .oasis-metric-box,
+.oasis-website-layout.light-mode .oasis-metric-box {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .oasis-metric-val,
+.oasis-website-layout.light-mode .oasis-metric-val {
+  color: #0284c7;
+}
+
+[data-theme="light"] .oasis-metric-desc,
+.oasis-website-layout.light-mode .oasis-metric-desc {
+  color: #64748b;
+}
+
+[data-theme="light"] .oasis-backdrop-notice,
+.oasis-website-layout.light-mode .oasis-backdrop-notice {
+  color: #94a3b8;
+}
+
+/* Floating Launcher Button */
+[data-theme="light"] .oasis-launcher-btn,
+body.light-theme .oasis-launcher-btn {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 10px 28px rgba(14, 165, 233, 0.22), 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .oasis-launcher-btn:hover,
+body.light-theme .oasis-launcher-btn:hover {
+  box-shadow: 0 14px 36px rgba(14, 165, 233, 0.32), 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================================================
+   LIGHT THEME: OASIS AI COPILOT CHATBOT WINDOW
+   ========================================================================== */
+
+/* Main Chat Window Popup */
+[data-theme="light"] .oasis-widget-popup,
+.oasis-widget-popup.light-theme {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 24px 60px -12px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .oasis-widget-popup.is-dragging,
+.oasis-widget-popup.light-theme.is-dragging {
+  box-shadow: 0 32px 80px -10px rgba(15, 23, 42, 0.25), 0 0 0 2px rgba(2, 132, 199, 0.4);
+}
+
+[data-theme="light"] .oasis-widget-popup.is-maximized,
+.oasis-widget-popup.light-theme.is-maximized {
+  box-shadow: 0 32px 80px -12px rgba(15, 23, 42, 0.2), 0 0 0 1px rgba(2, 132, 199, 0.25);
+}
+
+/* Widget Header */
+[data-theme="light"] .oasis-widget-header,
+.oasis-widget-popup.light-theme .oasis-widget-header {
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+[data-theme="light"] .oasis-title,
+.oasis-widget-popup.light-theme .oasis-title {
+  color: #0f172a;
+}
+
+[data-theme="light"] .oasis-subtitle,
+.oasis-widget-popup.light-theme .oasis-subtitle {
+  color: #059669;
+}
+
+[data-theme="light"] .oasis-drag-handle-btn,
+.oasis-widget-popup.light-theme .oasis-drag-handle-btn {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .oasis-drag-handle-btn:hover,
+.oasis-widget-popup.light-theme .oasis-drag-handle-btn:hover {
+  background: #f1f5f9;
+  color: #0284c7;
+  border-color: #bae6fd;
+}
+
+[data-theme="light"] .oasis-icon-btn,
+.oasis-widget-popup.light-theme .oasis-icon-btn {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+}
+
+[data-theme="light"] .oasis-icon-btn:hover,
+.oasis-widget-popup.light-theme .oasis-icon-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+[data-theme="light"] .oasis-history-toggle-btn.active,
+.oasis-widget-popup.light-theme .oasis-history-toggle-btn.active {
+  background: rgba(2, 132, 199, 0.1);
+  border-color: #38bdf8;
+  color: #0284c7;
+}
+
+[data-theme="light"] .oasis-window-divider,
+.oasis-widget-popup.light-theme .oasis-window-divider {
+  background: #e2e8f0;
+}
+
+/* Chat Messages Area */
+[data-theme="light"] .oasis-widget-body,
+[data-theme="light"] .oasis-messages-scroll,
+.oasis-widget-popup.light-theme .oasis-widget-body,
+.oasis-widget-popup.light-theme .oasis-messages-scroll {
+  background: #f8fafc;
+}
+
+/* Assistant Message Bubble */
+[data-theme="light"] .oasis-msg-bubble.assistant,
+.oasis-widget-popup.light-theme .oasis-msg-bubble.assistant {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .oasis-msg-timestamp,
+.oasis-widget-popup.light-theme .oasis-msg-timestamp {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .oasis-msg-action-btn,
+.oasis-widget-popup.light-theme .oasis-msg-action-btn {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .oasis-msg-action-btn:hover,
+.oasis-widget-popup.light-theme .oasis-msg-action-btn:hover {
+  color: #475569;
+}
+
+/* Thinking Box in Light Mode */
+[data-theme="light"] .oasis-thinking-box,
+.oasis-widget-popup.light-theme .oasis-thinking-box {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .oasis-thinking-box.in-progress,
+.oasis-widget-popup.light-theme .oasis-thinking-box.in-progress {
+  border-color: #38bdf8;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.16);
+}
+
+[data-theme="light"] .oasis-thinking-toggle,
+.oasis-widget-popup.light-theme .oasis-thinking-toggle {
+  color: #475569;
+}
+
+[data-theme="light"] .oasis-thinking-toggle:hover,
+.oasis-widget-popup.light-theme .oasis-thinking-toggle:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+[data-theme="light"] .oasis-thoughts-list,
+.oasis-widget-popup.light-theme .oasis-thoughts-list {
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .oasis-thought-item,
+.oasis-widget-popup.light-theme .oasis-thought-item {
+  color: #64748b;
+}
+
+[data-theme="light"] .oasis-thought-item.active-thought,
+.oasis-widget-popup.light-theme .oasis-thought-item.active-thought {
+  color: #0284c7;
+  font-weight: 500;
+}
+
+[data-theme="light"] .oasis-thought-dot,
+.oasis-widget-popup.light-theme .oasis-thought-dot {
+  background: #94a3b8;
+}
+
+[data-theme="light"] .oasis-thought-item.active-thought .oasis-thought-dot,
+.oasis-widget-popup.light-theme .oasis-thought-item.active-thought .oasis-thought-dot {
+  background: #0284c7;
+  box-shadow: 0 0 6px #0284c7;
+}
+
+/* Markdown, Tables, Code in Light Mode */
+[data-theme="light"] .oasis-markdown-body table,
+.oasis-widget-popup.light-theme .oasis-markdown-body table {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .oasis-markdown-body th,
+.oasis-widget-popup.light-theme .oasis-markdown-body th {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-bottom: 2px solid #bfdbfe;
+}
+
+[data-theme="light"] .oasis-markdown-body td,
+.oasis-widget-popup.light-theme .oasis-markdown-body td {
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+[data-theme="light"] .oasis-markdown-body tbody tr:nth-child(even),
+.oasis-widget-popup.light-theme .oasis-markdown-body tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+[data-theme="light"] .oasis-markdown-body tbody tr:hover,
+.oasis-widget-popup.light-theme .oasis-markdown-body tbody tr:hover {
+  background: #eff6ff;
+}
+
+[data-theme="light"] .oasis-markdown-body code,
+.oasis-widget-popup.light-theme .oasis-markdown-body code {
+  background: #f1f5f9;
+  color: #0284c7;
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .oasis-markdown-body blockquote,
+.oasis-widget-popup.light-theme .oasis-markdown-body blockquote {
+  background: #f0fdf4;
+  border-left: 3px solid #10b981;
+  color: #166534;
+}
+
+[data-theme="light"] .oasis-markdown-body p,
+[data-theme="light"] .oasis-markdown-body li,
+.oasis-widget-popup.light-theme .oasis-markdown-body p,
+.oasis-widget-popup.light-theme .oasis-markdown-body li {
+  color: #334155;
+}
+
+[data-theme="light"] .oasis-markdown-body strong,
+.oasis-widget-popup.light-theme .oasis-markdown-body strong {
+  color: #0f172a;
+}
+
+[data-theme="light"] .oasis-markdown-body h1,
+[data-theme="light"] .oasis-markdown-body h2,
+[data-theme="light"] .oasis-markdown-body h3,
+[data-theme="light"] .oasis-markdown-body h4,
+.oasis-widget-popup.light-theme .oasis-markdown-body h1,
+.oasis-widget-popup.light-theme .oasis-markdown-body h2,
+.oasis-widget-popup.light-theme .oasis-markdown-body h3,
+.oasis-widget-popup.light-theme .oasis-markdown-body h4 {
+  color: #0f172a;
+}
+
+/* Quick Pills & Suggested Actions */
+[data-theme="light"] .oasis-quick-chips-row,
+.oasis-widget-popup.light-theme .oasis-quick-chips-row {
+  background: #ffffff;
+  border-top: 1px solid #f1f5f9;
+}
+
+[data-theme="light"] .oasis-quick-pill,
+.oasis-widget-popup.light-theme .oasis-quick-pill {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+}
+
+[data-theme="light"] .oasis-quick-pill:hover,
+.oasis-widget-popup.light-theme .oasis-quick-pill:hover {
+  background: rgba(37, 99, 235, 0.08);
+  border-color: #3b82f6;
+  color: #2563eb;
+}
+
+[data-theme="light"] .oasis-action-chip,
+.oasis-widget-popup.light-theme .oasis-action-chip {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+[data-theme="light"] .oasis-action-chip:hover,
+.oasis-widget-popup.light-theme .oasis-action-chip:hover {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+/* Input Capsule & Footer */
+[data-theme="light"] .oasis-widget-footer,
+.oasis-widget-popup.light-theme .oasis-widget-footer {
+  background: #ffffff;
+  border-top: 1px solid #f1f5f9;
+}
+
+[data-theme="light"] .oasis-input-capsule,
+.oasis-widget-popup.light-theme .oasis-input-capsule {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .oasis-input-capsule:focus-within,
+.oasis-widget-popup.light-theme .oasis-input-capsule:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+[data-theme="light"] .oasis-chat-input,
+.oasis-widget-popup.light-theme .oasis-chat-input {
+  color: #0f172a;
+}
+
+[data-theme="light"] .oasis-chat-input::placeholder,
+.oasis-widget-popup.light-theme .oasis-chat-input::placeholder {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .oasis-capsule-subfooter,
+.oasis-widget-popup.light-theme .oasis-capsule-subfooter {
+  color: #94a3b8;
+}
+
+/* History Drawer */
+[data-theme="light"] .oasis-history-view,
+.oasis-widget-popup.light-theme .oasis-history-view {
+  background: #ffffff;
+}
+
+[data-theme="light"] .oasis-history-header,
+.oasis-widget-popup.light-theme .oasis-history-header {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .oasis-history-title,
+.oasis-widget-popup.light-theme .oasis-history-title {
+  color: #0f172a;
+}
+
+[data-theme="light"] .oasis-history-item,
+.oasis-widget-popup.light-theme .oasis-history-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .oasis-history-item:hover,
+.oasis-widget-popup.light-theme .oasis-history-item:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+[data-theme="light"] .oasis-history-item.active,
+.oasis-widget-popup.light-theme .oasis-history-item.active {
+  background: #eff6ff;
+  border-color: #38bdf8;
+}
+
+[data-theme="light"] .oasis-history-item-title,
+.oasis-widget-popup.light-theme .oasis-history-item-title {
+  color: #0f172a;
+}
+
+[data-theme="light"] .oasis-history-item-time,
+.oasis-widget-popup.light-theme .oasis-history-item-time {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .oasis-back-to-chat-btn,
+.oasis-widget-popup.light-theme .oasis-back-to-chat-btn {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+[data-theme="light"] .oasis-back-to-chat-btn:hover,
+.oasis-widget-popup.light-theme .oasis-back-to-chat-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* Copilot Config Modal Light Mode */
+[data-theme="light"] .oasis-modal-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 25px 60px -10px rgba(15, 23, 42, 0.2);
+}
+
+[data-theme="light"] .oasis-modal-header {
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+[data-theme="light"] .oasis-modal-title {
+  color: #0f172a;
+}
+
+[data-theme="light"] .oasis-modal-subtitle {
+  color: #64748b;
+}
+
+[data-theme="light"] .oasis-modal-notice {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+}
+
+[data-theme="light"] .oasis-modal-notice strong {
+  color: #1e3a8a;
+}
+
+[data-theme="light"] .oasis-field-label {
+  color: #1e293b;
+}
+
+[data-theme="light"] .oasis-modal-text-input {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+}
+
+[data-theme="light"] .oasis-modal-text-input::placeholder {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .oasis-btn-secondary {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+[data-theme="light"] .oasis-btn-secondary:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+[data-theme="light"] .oasis-divider-line {
+  background: #e2e8f0;
+}
+
+[data-theme="light"] .oasis-divider-text {
+  color: #94a3b8;
+}
+
+[data-theme="light"] .oasis-theme-choice-btn {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #64748b;
+}
+
+[data-theme="light"] .oasis-theme-choice-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+[data-theme="light"] .oasis-theme-choice-btn.active {
+  background: #eff6ff;
+  border-color: #0284c7;
+  color: #0284c7;
+}
+
+/* ==========================================================================
+   DARK THEME: STANDALONE HEADER & PROFILE
+   ========================================================================== */
+[data-theme="dark"] .app-header {
+  background-color: #0b111c;
+  border-bottom: 1px solid #162030;
+}
+
+[data-theme="dark"] .brand-title {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .header-theme-toggle-btn {
+  background: #111a28;
+  border-color: #1e2c3e;
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .header-theme-toggle-btn:hover {
+  background: #182538;
+  color: #38bdf8;
+  border-color: #38bdf8;
+}
+
+[data-theme="dark"] .user-profile-button {
+  background: #111a28;
+  border-color: #1e2c3e;
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .user-dropdown-menu {
+  background: #0f1726;
+  border-color: #1c2b3d;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .dropdown-user-name {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .dropdown-user-email {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .dropdown-item {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+  background: #182538;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .dropdown-divider {
+  background: #1c2b3d;
+}
+
+
 
