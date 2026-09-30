@@ -276,6 +276,51 @@ export default function OasisChatWidget({ isOpen, onClose }) {
     }
   }, [isOpen, isHistoryOpen]);
 
+  // Close chatbot window when clicking anywhere outside of it
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (event) => {
+      // Don't close chatbot if settings modal is open
+      if (isConfigModalOpen) return;
+
+      // Don't close if currently dragging the window
+      if (isDragging) return;
+
+      // If click was inside the chatbot widget, keep open
+      if (widgetRef.current && widgetRef.current.contains(event.target)) {
+        return;
+      }
+
+      // If click was on the launcher button, let its own click handler toggle it
+      if (event.target && event.target.closest && event.target.closest('.oasis-launcher-btn')) {
+        return;
+      }
+
+      onClose();
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        if (isConfigModalOpen) {
+          setIsConfigModalOpen(false);
+        } else {
+          onClose();
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose, isConfigModalOpen, isDragging]);
+
   const handleSelectConversation = (convId) => {
     if (convId !== activeConversationId) {
       setActiveConversationId(convId);
@@ -569,19 +614,6 @@ export default function OasisChatWidget({ isOpen, onClose }) {
 
           {/* Window Control Divider */}
           <span className="oasis-window-divider"></span>
-
-          {/* Minimize Button */}
-          <button
-            type="button"
-            className="oasis-icon-btn oasis-minimize-btn"
-            onClick={onClose}
-            title="Minimize window"
-            aria-label="Minimize window"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="14" height="14">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-          </button>
 
           {/* Maximize / Restore Button */}
           <button
